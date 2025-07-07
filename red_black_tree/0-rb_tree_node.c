@@ -12,7 +12,7 @@ rb_tree_t *rb_tree_node(rb_tree_t *parent, int value, rb_color_t color)
 {
 	rb_tree_t *node;
 
-	if (!parent || (color != BLACK && color != RED && color != DOUBLE_BLACK))
+	if ((color != BLACK && color != RED && color != DOUBLE_BLACK))
 		return (NULL);
 
 	node = (rb_tree_t *)malloc(sizeof(rb_tree_t));
