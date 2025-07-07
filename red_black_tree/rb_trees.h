@@ -10,7 +10,7 @@
  * @BLACK: 1 -> Black node
  * @DOUBLE_BLACK: 2 -> Double-black node (used for deletion)
  */
-typedef enum
+typedef enum rb_color_e
 {
 	RED = 0,
 	BLACK,
@@ -18,19 +18,19 @@ typedef enum
 } rb_color_t;
 
 /**
- * struct rb_tree - red-black tree node
+ * struct rb_tree_s - red-black tree node
  * @n: value of current node
  * @parent: parent node of current node
  * @left: left node of current node
  * @right: right node of current node
  * @color: red-black color of current node
  */
-typedef struct rb_tree
+typedef struct rb_tree_s
 {
 	int n;
-	struct rb_tree *parent;
-	struct rb_tree *left;
-	struct rb_tree *right;
+	struct rb_tree_s *parent;
+	struct rb_tree_s *left;
+	struct rb_tree_s *right;
 	rb_color_t color;
 } rb_tree_t;
 
