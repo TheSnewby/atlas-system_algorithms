@@ -22,4 +22,6 @@ rb_tree_t *rb_tree_node(rb_tree_t *parent, int value, rb_color_t color)
 	node->right = NULL;
 	node->value = value;
 	node->color = color;
+
+	return (node);
 }
