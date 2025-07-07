@@ -3,15 +3,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * enum rb_color_e - Possible color of a Red-Black tree
+ *
+ * @RED: 0 -> Red node
+ * @BLACK: 1 -> Black node
+ * @DOUBLE_BLACK: 2 -> Double-black node (used for deletion)
+ */
 typedef enum
 {
 	RED = 0,
-	BLACK = 1
+	BLACK,
+	DOUBLE_BLACK
 } rb_color_t;
 
 /**
  * struct rb_tree - red-black tree node
- * @value: value of current node
+ * @n: value of current node
  * @parent: parent node of current node
  * @left: left node of current node
  * @right: right node of current node
@@ -19,7 +27,7 @@ typedef enum
  */
 typedef struct rb_tree
 {
-	int value;
+	int n;
 	struct rb_tree *parent;
 	struct rb_tree *left;
 	struct rb_tree *right;
