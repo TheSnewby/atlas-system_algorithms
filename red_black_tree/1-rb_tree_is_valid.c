@@ -8,7 +8,7 @@
  *
  * Return: 1 if valid RBT, 0 otherwise
  */
-int rb_tree_valid_recurse(rb_tree_t *tree, int min, int max)
+int rb_tree_valid_recurse(const rb_tree_t *tree, int min, int max)
 {
 	int left_return = 1, right_return = 1;
 
