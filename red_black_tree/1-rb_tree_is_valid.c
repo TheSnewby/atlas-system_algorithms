@@ -14,8 +14,8 @@ int bheight_check(const rb_tree_t *tree)
 	if (!tree)
 		return (1);
 
-	bh_left = bheight(tree->left);
-	bh_right = bheight(tree->right);
+	bh_left = bheight_check(tree->left);
+	bh_right = bheight_check(tree->right);
 
 	if ((bh_left == -1) && (bh_right == -1))
 		return (-1);
