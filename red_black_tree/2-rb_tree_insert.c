@@ -152,24 +152,23 @@ void rb_tree_recolor_and_rotations(rb_tree_t **tree)
  * rb_tree_insert_helper - recursive helper for rb_tree_insert()
  * @tree: current node
  * @value: value to be inserted
- * @parent: parent of current node
  *
  * Return: pointer to the created node, or NULL on failure
  */
-rb_tree_t *rb_tree_insert_helper(rb_tree_t **tree, int value, rb_tree_t *parent)
+rb_tree_t *rb_tree_insert_helper(rb_tree_t **tree, int value)
 {
-	rb_tree_t *new_node, *parent, *uncle, *grandparent;
+	rb_tree_t *new_node;
 	rb_color_t new_color = RED;
 
 	if ((*tree) && (value < (*tree)->n))
 	{
-		new_node = rb_tree_insert_helper(&((*tree)->left), value, (*tree)->parent);
+		new_node = rb_tree_insert_helper(&((*tree)->left), value);
 		if (new_node && (*tree)->left)
 			(*tree)->left->parent = *tree;
 	}
 	else if ((*tree) && (value > (*tree)->n))
 	{
-		new_node = rb_tree_insert_helper(&((*tree)->right), value, (*tree)->parent);
+		new_node = rb_tree_insert_helper(&((*tree)->right), value);
 		if (new_node && (*tree)->right)
 			(*tree)->right->parent = *tree;
 	}
@@ -203,7 +202,7 @@ rb_tree_t *rb_tree_insert(rb_tree_t **tree, int value)
 		return (*tree);
 	}
 
-	new_node = rb_tree_insert_helper(tree, value, (*tree)->parent);
+	new_node = rb_tree_insert_helper(tree, value);
 
 	return (new_node);
 }
