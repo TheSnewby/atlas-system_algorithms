@@ -99,17 +99,16 @@ void rb_tree_recolor_and_rotations(rb_tree_t **tree)
 	rb_tree_t *parent = NULL, *uncle = NULL, *grandparent = NULL;
 	int nodeIsLeft = 0, uncleIsLeft = 0; /* location-help for rotations */
 
-	if ((*tree)->parent && (*tree)->parent->parent) /* naming for own sanity */
-	{
+	if ((*tree)->parent) /* naming for own sanity */
 		parent = (*tree)->parent;
+	if ((*tree)->parent->parent)
 		grandparent = parent->parent;
-	}
 	if (grandparent && grandparent->left != parent) /* more naming */
 	{
 		uncle = grandparent->left;
 		uncleIsLeft = 1;
 	}
-	else
+	else if (grandparent)
 		uncle = grandparent->right;
 	if (parent && parent->left == (*tree))
 		nodeIsLeft = 1;
@@ -125,22 +124,26 @@ void rb_tree_recolor_and_rotations(rb_tree_t **tree)
 	{
 		if (!uncleIsLeft && nodeIsLeft) /* LL */
 		{
+			printf("LL\n");
 			tree_rotate_right(grandparent);
 			rb_color_swap(parent, grandparent);
 		}
 		else if (!uncleIsLeft && !nodeIsLeft) /* LR */
 		{
+			printf("LR\n");
 			tree_rotate_left(parent);
 			tree_rotate_right(grandparent);
 			rb_color_swap((*tree), grandparent);
 		}
 		else if (uncleIsLeft && !nodeIsLeft) /* RR */
 		{
+			printf("RR\n");
 			tree_rotate_left(grandparent);
 			rb_color_swap(parent, grandparent);
 		}
 		else if (uncleIsLeft && nodeIsLeft) /* RL */
 		{
+			printf("RL\n");
 			tree_rotate_right(parent);
 			tree_rotate_left(grandparent);
 			rb_color_swap((*tree), grandparent);
@@ -177,7 +180,8 @@ rb_tree_t *rb_tree_insert_helper(rb_tree_t **tree, int value)
 	else if (!(*tree)) /* create new node at leaf */
 		*tree = rb_tree_node(NULL, value, new_color);
 
-	rb_tree_recolor_and_rotations(tree);
+	if ((*tree) && (*tree)->parent && (*tree)->parent->parent)
+		rb_tree_recolor_and_rotations(tree);
 
 	if (!new_node)
 		return (NULL);
@@ -205,4 +209,50 @@ rb_tree_t *rb_tree_insert(rb_tree_t **tree, int value)
 	new_node = rb_tree_insert_helper(tree, value);
 
 	return (new_node);
+}
+
+/**
+ * main - Entry point
+ *
+ * Return: 0 on success
+ */
+int main(void)
+{
+    rb_tree_t *root;
+    rb_tree_t *node;
+
+    root = NULL;
+    node = rb_tree_insert(&root, 98);
+    printf("Inserted: %d\n", node->n);
+    rb_tree_print(root);
+    node = rb_tree_insert(&root, 402);
+    printf("Inserted: %d\n", node->n);
+    rb_tree_print(root);
+    node = rb_tree_insert(&root, 512);
+    printf("Inserted: %d\n", node->n);
+    rb_tree_print(root);
+    node = rb_tree_insert(&root, 12);
+    printf("Inserted: %d\n", node->n);
+    rb_tree_print(root);
+    node = rb_tree_insert(&root, 46);
+    printf("Inserted: %d\n", node->n);
+    rb_tree_print(root);
+    node = rb_tree_insert(&root, 128);
+    printf("Inserted: %d\n", node->n);
+    rb_tree_print(root);
+    node = rb_tree_insert(&root, 256);
+    printf("Inserted: %d\n", node->n);
+    rb_tree_print(root);
+    node = rb_tree_insert(&root, 1);
+    printf("Inserted: %d\n", node->n);
+    rb_tree_print(root);
+    node = rb_tree_insert(&root, 128);
+    printf("Node should be nil -> %p\n", (void *)node);
+    node = rb_tree_insert(&root, 624);
+    printf("Inserted: %d\n", node->n);
+    rb_tree_print(root);
+    node = rb_tree_insert(&root, 780);
+    printf("Inserted: %d\n", node->n);
+    rb_tree_print(root);
+    return (0);
 }
