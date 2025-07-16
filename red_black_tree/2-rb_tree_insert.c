@@ -94,7 +94,6 @@ void rb_color_swap(rb_tree_t *node1, rb_tree_t *node2)
  * rb_tree_recolor_and_rotations_pt2 - continues recoloring and rotation of node
  * @tree: target node
  * @parent: parent of target node
- * @uncle: uncle of target node
  * @grandparent: grandparent of target node
  * @nodeIsLeft: bool of whether target node is a left child
  * @uncleIsLeft: bool of whether uncle of target node is a left child
@@ -102,7 +101,7 @@ void rb_color_swap(rb_tree_t *node1, rb_tree_t *node2)
  * Return: current node
  */
 rb_tree_t *rb_tree_recolor_and_rotations_pt2(rb_tree_t **tree,
-	rb_tree_t *parent, rb_tree_t *uncle, rb_tree_t *grandparent,
+	rb_tree_t *parent, rb_tree_t *grandparent,
 	int nodeIsLeft, int uncleIsLeft)
 {
 	if (!uncleIsLeft && nodeIsLeft) /* LL */
@@ -165,7 +164,8 @@ rb_tree_t *rb_tree_recolor_and_rotations(rb_tree_t **tree)
 		*tree = grandparent;
 	}
 	else if (grandparent && (!uncle || (uncle && uncle->color == BLACK)))
-		*tree = rb_tree_recolor_and_rotations_pt2(tree, parent, uncle, grandparent, nodeIsLeft, uncleIsLeft);
+		*tree = rb_tree_recolor_and_rotations_pt2(tree, parent, grandparent,
+			nodeIsLeft, uncleIsLeft);
 
 	return (*tree);
 }
