@@ -16,7 +16,7 @@ rb_tree_t *array_to_rb_tree(int *array, size_t size)
 		return (NULL);
 
 	for (i = 0; i < size; i++)
-		rbtree = rb_tree_insert(NULL, array[i]);
+		rbtree = rb_tree_insert(&rbtree, array[i]);
 
 	return (rbtree);
 }
