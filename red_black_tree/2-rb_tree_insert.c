@@ -91,7 +91,7 @@ void rb_color_swap(rb_tree_t *node1, rb_tree_t *node2)
 }
 
 /**
- * rb_tree_recolor_and_rotations_pt2 - continues recoloring and rotation of node
+ * rb_tree_recolor_and_rotations_pt2 - continues recoloring and rotation
  * @tree: target node
  * @parent: parent of target node
  * @grandparent: grandparent of target node
@@ -178,7 +178,8 @@ rb_tree_t *rb_tree_recolor_and_rotations(rb_tree_t **tree)
  *
  * Return: pointer to the created node, or NULL on failure
  */
-rb_tree_t *rb_tree_insert_helper(rb_tree_t **tree, int value, rb_tree_t *parent)
+rb_tree_t *rb_tree_insert_helper(rb_tree_t **tree, int value,
+	rb_tree_t *parent)
 {
 	rb_tree_t *new_node;
 	rb_color_t new_color = RED;
@@ -223,7 +224,6 @@ rb_tree_t *rb_tree_insert(rb_tree_t **tree, int value)
 		return (NULL);
 	temp = new_node;
 
-	/* printf("(*tree)->n in helper just before recolor_and_rotation call: %d\n", (*tree)->n); */
 	while ((temp) && (temp)->parent && temp->parent->color == RED)
 		temp = rb_tree_recolor_and_rotations(&temp);
 
