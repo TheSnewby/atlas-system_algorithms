@@ -69,6 +69,17 @@ typedef struct graph_s
     vertex_t    *vertices;
 } graph_t;
 
+/**
+ * stack_s - stack structure for keeping track of vertices
+ * @vertex: current vertex
+ * @next: next stack object
+ */
+typedef struct stack_s
+{
+	vertex_t *vertex;
+	struct stack_s *next;
+} stack_t;
+
 graph_t *graph_create(void);
 vertex_t *graph_add_vertex(graph_t *graph, const char *str);
 int graph_add_edge(graph_t *graph, const char *src, const char *dest, edge_type_t type);
