@@ -1,47 +1,33 @@
 #include "graphs.h"
 
 /**
- * vertex_list_check - checks whether vertex in stack
- * @list: list of discovered vertices
- * @vertex: vertex to check
- *
- * Return: 1 if in, 0 if not, -1 if failure
+ * dfs_recursive - performs the recursive dfs function of a graph 
+ * @stack: current stack node
+ * @depth: current depth
+ * @action: function pointer
+ * @bvd: biggest vertex depth
  */
-int vertex_list_check(stack_t *list, vertex_t *vertex)
+void dfs_recursive(vertex_t *vertex, size_t depth, void
+	(*action)(const vertex_t *vertex, size_t depth),
+	size_t *bvd, size_t *visited)
 {
-	stack_t *temp = 0;
+	edge_t *temp_e = NULL;
 
-	if (!list || !vertex)
-		return (0);
+	if (!vertex || !action || !vertex->edges || visited[vertex->index])
+		return;
 
-	temp = list->vertex;
-	while (temp)
+	visited[vertex->index] = 1;
+	action(vertex, depth);
+
+	if (depth > *bvd)
+		*bvd = depth;
+
+	temp_e = vertex->edges;
+	while (temp_e)
 	{
-		if (temp->vertex == vertex)
-			return (1);
+		dfs_recursive(temp_e->dest, 1 + depth, action, bvd, visited);
+		temp_e = temp_e->next;
 	}
-
-	return (0);
-}
-
-/**
- * create_stack - creates a stack
- * @vertex: first vertex
- *
- * Return: new stack, or NULL on failure
- */
-stack_t *create_stack(vertex_t *vertex)
-{
-	stack_t *new = NULL;
-
-	new = (stack_t *)malloc(sizeof(stack_t));
-	if (!new)
-		return (NULL);
-
-	new->vertex = vertex;
-	new->next = NULL;
-
-	return (new);
 }
 
 /**
@@ -52,59 +38,28 @@ stack_t *create_stack(vertex_t *vertex)
  * its parameters are:
  *  v -> A const pointer to the visited vertex
  *  depth -> The depth of v, from the starting vertex
+ * 
+ * Note: stack traversal of discovered vertices
  *
  * Return: biggest vertex depth, or 0 on failure
  */
 size_t depth_first_traverse(const graph_t *graph,
 	void (*action)(const vertex_t *v, size_t depth))
 {
-	/* stack traversal of discovered vertices */
-	/* stack being a singly ll where nodes are placed and popped from head */
+	int i;
 	vertex_t *temp_v = NULL;
 	edge_t *temp_e = NULL;
-	size_t bvd = 0;
-	stack_t *stack, *list, *temp_s, *temp_list_s;
+	size_t bvd = 0, depth = 0, *visited;
 
-	if (!graph || !action)
+	if (!graph || !action || !graph->vertices || graph->nb_vertices <= 0)
 		return (0);
 
-	temp_v = graph->vertices;
-
-
-	stack = create_stack(temp_v);
-	list = create_stack(temp_v);
-	temp_s = create_stack(NULL); /* necessary? */
-	if (!stack || !list || !temp_s)
+	visited = (size_t *)calloc(graph->nb_vertices, sizeof(int));
+	if (!visited)
 		return (0);
 
-	while (stack->vertex)
-	{
-		temp_v = stack->vertex; /* pop from stack*/
-		stack = stack->next; 
-
-		temp_e = temp_v->edges;
-		while (temp_e)
-		{
-			if (vertex_list_check(list, temp_e->dest) == 0)
-			{
-				if (!stack)
-					stack = temp_e->dest;
-				else
-				{
-					temp_s->vertex = temp_e->dest;
-					temp_s->next = stack;
-					stack = temp_s;
-				}
-				temp_list_s = list;
-				/* add vertex to "list" */
-			}
-			temp_e = temp_e->next;
-		}
-		action(temp_v, bvd); /* what do i do with bvd? */
-	}
-	free(stack);
-	free(list);
-	free(temp_s);
+	/* consider looping through to find disconnected nodes */
+	dfs_recursive(graph->vertices, depth, action, &bvd, visited);
 
 	return (bvd);
 }
