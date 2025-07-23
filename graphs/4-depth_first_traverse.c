@@ -1,19 +1,20 @@
 #include "graphs.h"
 
 /**
- * dfs_recursive - performs the recursive dfs function of a graph 
- * @stack: current stack node
+ * dfs_recursive - performs the recursive dfs function of a graph
+ * @vertex: current vertex node
  * @depth: current depth
  * @action: function pointer
  * @bvd: biggest vertex depth
+ * @visited: array of visited nodes by index
  */
-void dfs_recursive(vertex_t *vertex, size_t depth, void
-	(*action)(const vertex_t *vertex, size_t depth),
+void dfs_recursive(const vertex_t *vertex, size_t depth,
+	void (*action)(const vertex_t *vertex, size_t depth),
 	size_t *bvd, size_t *visited)
 {
 	edge_t *temp_e = NULL;
 
-	if (!vertex || !action || !vertex->edges || visited[vertex->index])
+	if (!vertex || !action || visited[vertex->index])
 		return;
 
 	visited[vertex->index] = 1;
@@ -38,7 +39,7 @@ void dfs_recursive(vertex_t *vertex, size_t depth, void
  * its parameters are:
  *  v -> A const pointer to the visited vertex
  *  depth -> The depth of v, from the starting vertex
- * 
+ *
  * Note: stack traversal of discovered vertices
  *
  * Return: biggest vertex depth, or 0 on failure
@@ -52,7 +53,7 @@ size_t depth_first_traverse(const graph_t *graph,
 	if (!graph || !action || !graph->vertices || graph->nb_vertices <= 0)
 		return (0);
 
-	visited = (size_t *)calloc(graph->nb_vertices, sizeof(int));
+	visited = (size_t *)calloc(graph->nb_vertices, sizeof(size_t));
 	if (!visited)
 		return (0);
 
@@ -60,9 +61,11 @@ size_t depth_first_traverse(const graph_t *graph,
 	temp_v = graph->vertices;
 	while (temp_v)
 	{
-		dfs_recursive(graph->vertices, depth, action, &bvd, visited);
+		dfs_recursive(temp_v, depth, action, &bvd, visited);
 		temp_v = temp_v->next;
 	}
+
+	free(visited);
 
 	return (bvd);
 }
