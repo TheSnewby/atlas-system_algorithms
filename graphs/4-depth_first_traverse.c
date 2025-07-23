@@ -47,6 +47,7 @@ size_t depth_first_traverse(const graph_t *graph,
 	void (*action)(const vertex_t *v, size_t depth))
 {
 	size_t bvd = 0, depth = 0, *visited;
+	vertex_t *temp_v;
 
 	if (!graph || !action || !graph->vertices || graph->nb_vertices <= 0)
 		return (0);
@@ -55,8 +56,13 @@ size_t depth_first_traverse(const graph_t *graph,
 	if (!visited)
 		return (0);
 
-	/* consider looping through to find disconnected nodes */
-	dfs_recursive(graph->vertices, depth, action, &bvd, visited);
+	/* loops through to find disconnected nodes */
+	temp_v = graph->vertices;
+	while (temp_v)
+	{
+		dfs_recursive(graph->vertices, depth, action, &bvd, visited);
+		temp_v = temp_v->next;
+	}
 
 	return (bvd);
 }
