@@ -69,6 +69,31 @@ typedef struct graph_s
     vertex_t    *vertices;
 } graph_t;
 
+/**
+ * struct queue_node_s - Representation of a queue node
+ * @vertex: current vertex node
+ * @depth: current vertex depth
+ * @next: next vertex node to visit
+ */
+typedef struct queue_node_s
+{
+	vertex_t *vertex;
+	size_t depth;
+	struct queue_node_s *next;
+} queue_node_t;
+
+/**
+ * struct queue_s - Representation of a Queue
+ * @head: head of queue to dequeue from
+ * @tail: tail of queue to queue to
+ */
+typedef struct queue_s
+{
+	queue_node_t *head;
+	queue_node_t *tail;
+} queue_t;
+
+
 graph_t *graph_create(void);
 vertex_t *graph_add_vertex(graph_t *graph, const char *str);
 int graph_add_edge(graph_t *graph, const char *src, const char *dest, edge_type_t type);
@@ -76,5 +101,6 @@ void graph_delete(graph_t *graph);
 size_t depth_first_traverse(const graph_t *graph, void (*action)(const vertex_t *v, size_t depth));
 size_t breadth_first_traverse(const graph_t *graph, void (*action)(const vertex_t *v, size_t depth));
 void graph_display(const graph_t *graph);
+size_t breadth_first_traverse(const graph_t *graph, void (*action)(const vertex_t *v, size_t depth));
 
 #endif
