@@ -1,0 +1,1 @@
+heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size);

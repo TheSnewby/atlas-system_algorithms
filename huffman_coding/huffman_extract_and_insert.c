@@ -1,0 +1,1 @@
+int huffman_extract_and_insert(heap_t *priority_queue);
