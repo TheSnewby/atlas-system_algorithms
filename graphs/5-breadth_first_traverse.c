@@ -113,12 +113,12 @@ size_t breadth_first_traverse(const graph_t *graph,
 	while (queue && queue->head)
 	{
 		depth = queue->head->depth; /* handle depth and bvd */
-		if (depth > bvd)
-			bvd = depth;
 		temp_v = dequeue(queue);
 
 		if (visited[temp_v->index])
 			continue;
+		if (depth > bvd)
+			bvd = depth;
 
 		action(temp_v, depth);
 		visited[temp_v->index] = 1;
