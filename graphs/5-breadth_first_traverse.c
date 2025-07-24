@@ -124,10 +124,10 @@ size_t breadth_first_traverse(const graph_t *graph,
 		visited[temp_v->index] = 1;
 		temp_e = temp_v->edges;
 
-
 		while (temp_e) /* enqueue all edges */
 		{
-			enqueue(queue, temp_e->dest, 1 + depth);
+			if (!visited[temp_e->dest->index])
+				enqueue(queue, temp_e->dest, 1 + depth);
 			temp_e = temp_e->next;
 		}
 	}
