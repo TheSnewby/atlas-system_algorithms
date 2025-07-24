@@ -106,7 +106,6 @@ size_t breadth_first_traverse(const graph_t *graph,
 	visited = (size_t *)calloc(graph->nb_vertices, sizeof(size_t));
 	if (!visited)
 		return (0);
-
 	queue = create_queue();
 	enqueue(queue, graph->vertices, 0);
 
@@ -132,5 +131,6 @@ size_t breadth_first_traverse(const graph_t *graph,
 		}
 	}
 	free(queue);
+	free(visited);
 	return (bvd);
 }
