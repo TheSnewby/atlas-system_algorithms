@@ -61,12 +61,12 @@ void *heap_extract(heap_t *heap)
 	{
 		if (temp->left && temp->right)
 		{
-			if (temp->left->data < temp->right->data && temp->data > temp->left->data)
+			if (heap->data_cmp(temp->left->data, temp->right->data) < 0 && heap->data_cmp(temp->data, temp->left->data) > 0)
 			{
 				swap_data(temp, temp->left);
 				temp = temp->left;
 			}
-			else if (temp->left->data > temp->right->data && temp->data > temp->right->data)
+			else if (heap->data_cmp(temp->left->data, temp->right->data) > 0 && heap->data_cmp(temp->data, temp->right->data) > 0)
 			{
 				swap_data(temp, temp->right);
 				temp = temp->right;
@@ -74,12 +74,12 @@ void *heap_extract(heap_t *heap)
 			else
 				break;
 		}
-		else if (temp->left && temp->data > temp->left->data)
+		else if (temp->left && heap->data_cmp(temp->data, temp->left->data) > 0)
 		{
 			swap_data(temp, temp->left);
 			temp = temp->left;
 		}
-		else if (temp->right && temp->data > temp->right->data)
+		else if (temp->right && heap->data_cmp(temp->data, temp->right->data) > 0)
 		{
 			swap_data(temp, temp->right);
 			temp = temp->right;
