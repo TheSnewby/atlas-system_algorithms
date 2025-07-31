@@ -32,7 +32,7 @@ void *heap_extract(heap_t *heap)
 	data = heap->root->data;
 	temp = heap->root;
 
-	while ((1U << (bitwise_pos + 1) <= heap->size))
+	while ((1U << (bitwise_pos + 1)) <= heap->size)
 		bitwise_pos++;
 
 	bitwise_pos--;
