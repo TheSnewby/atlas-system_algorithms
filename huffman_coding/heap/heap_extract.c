@@ -52,11 +52,12 @@ void *heap_extract(heap_t *heap)
 	else if (temp->parent && temp->parent->right)
 		temp->parent->right = NULL;
 	free(temp);
+	temp = NULL;
 
 	heap->size--;
-
+	if (heap->size == 0)
+		heap->root = NULL;
 	temp = heap->root;
-
 	while (temp)
 	{
 		if (temp->left && temp->right)
