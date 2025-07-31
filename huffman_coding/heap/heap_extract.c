@@ -23,7 +23,7 @@ static void swap_data(binary_tree_node_t *parent, binary_tree_node_t *new_node)
 void *heap_extract(heap_t *heap)
 {
 	void *data = NULL;
-	size_t bitwise_pos = 0;
+	int bitwise_pos = 0;
 	binary_tree_node_t *temp = NULL;
 
 	if (!heap || !heap->root || heap->size == 0)
@@ -38,7 +38,7 @@ void *heap_extract(heap_t *heap)
 	bitwise_pos--;
 	while (bitwise_pos > 0)
 	{
-		if (heap->size & (1U << bitwise_pos))
+		if (heap->size & (1U << (bitwise_pos + 1)))
 			temp = temp->right;
 		else
 			temp = temp->left;
@@ -47,9 +47,9 @@ void *heap_extract(heap_t *heap)
 
 	heap->root->data = temp->data;
 
-	if (temp->parent->left == temp)
+	if (temp->parent && temp->parent->left && temp->parent->left == temp)
 		temp->parent->left = NULL;
-	else
+	else if (temp->parent && temp->parent->right)
 		temp->parent->right = NULL;
 	free(temp);
 
