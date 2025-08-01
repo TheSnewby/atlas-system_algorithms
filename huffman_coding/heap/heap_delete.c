@@ -3,7 +3,7 @@
 /**
  * heap_delete_rec - recursive helper for heap_delete
  * @root: root node
- * @heap: heap
+ * @free_data: pointer to function to free data
  */
 void heap_delete_rec(binary_tree_node_t *root, void (*free_data)(void *))
 {
@@ -15,7 +15,8 @@ void heap_delete_rec(binary_tree_node_t *root, void (*free_data)(void *))
 	if (root->right)
 		heap_delete_rec(root->right, free_data);
 
-	free_data(root->data);
+	if (free_data)
+		free_data(root->data);
 	free(root);
 	root = NULL;
 }
@@ -27,7 +28,7 @@ void heap_delete_rec(binary_tree_node_t *root, void (*free_data)(void *))
  */
 void heap_delete(heap_t *heap, void (*free_data)(void *))
 {
-	if (!heap || !free_data)
+	if (!heap)
 		return;
 
 	heap_delete_rec(heap->root, free_data);
