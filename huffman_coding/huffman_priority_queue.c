@@ -1,19 +1,22 @@
 #include "huffman.h"
 
 /**
- * data_cmp - compares data between nodes' symbols
+ * freq_cmp - compares data between nodes' symbols
  * @p1: first pointer
  * @p2: second pointer
  *
  * Return: Difference between the two frequencies
  */
-int data_cmp(void *p1, void *p2)
+int freq_cmp(void *p1, void *p2)
 {
+	binary_tree_node_t *b1, *b2;
 	symbol_t *s1, *s2;
 	int n1, n2;
 
-	s1 = (symbol_t *)p1;
-	s2 = (symbol_t *)p2;
+	b1 = (binary_tree_node_t *)p1;
+	b2 = (binary_tree_node_t *)p2;
+	s1 = (symbol_t *)b1->data;
+	s2 = (symbol_t *)b2->data;
 	n1 = (int)s1->freq;
 	n2 = (int)s2->freq;
 
@@ -22,8 +25,8 @@ int data_cmp(void *p1, void *p2)
 
 /**
  * huffman_priority_queue - creates a priority queue for huffman algorithm
- * @data: array of characters of size size
- * @freq: array of associated frequencies of size size
+ * @data: array of characters
+ * @freq: array of associated frequencies
  * @size: size of arrays
  *
  * Return: priority queue or NULL on failure
@@ -38,7 +41,7 @@ heap_t *huffman_priority_queue(char *data, size_t *freq, size_t size)
 	if (!data || !freq || !size)
 		return (NULL);
 
-	queue = heap_create(data_cmp);
+	queue = heap_create(freq_cmp);
 	if (!queue)
 		return (NULL);
 
