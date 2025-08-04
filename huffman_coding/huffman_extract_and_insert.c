@@ -12,7 +12,7 @@ int huffman_extract_and_insert(heap_t *priority_queue)
 	symbol_t *new_sym = NULL, *left_sym = NULL, *right_sym = NULL;
 	binary_tree_node_t *new_node = NULL, *left = NULL, *right = NULL;
 
-	if (!priority_queue || priority_queue->size < 5)
+	if (!priority_queue || priority_queue->size < 2)
 		return (0);
 
 	left = heap_extract(priority_queue);
