@@ -15,52 +15,40 @@ static void swap_data(binary_tree_node_t *parent, binary_tree_node_t *new_node)
 }
 
 /**
- * heap_insert_recurse - performs recursive function of min heap insert
+ * parent_finder - returns the parent node of the location of the new node
  * @heap: heap
- * @node: current node
- * @data: data
+ * @i: index of new location
  *
- * Return: new node containing data or NULL on failure
+ * Return: pointer to parent
  */
-binary_tree_node_t *heap_insert_recurse(heap_t *heap,
-	binary_tree_node_t *node, void *data)
+binary_tree_node_t *parent_finder(heap_t *heap, size_t i)
 {
-	binary_tree_node_t *new_node = NULL;
+	size_t parent_i, depth = 0, path[16], temp_i;
+	binary_tree_node_t *parent = NULL;
 
-	if (!heap->root)
+	if (!i)
+		return (NULL);
+
+	parent_i = (i - 1) / 2;
+
+	temp_i = parent_i;
+	while (temp_i > 0)
 	{
-		new_node = binary_tree_node(NULL, data);
-		heap->size++;
-		heap->root = new_node;
-		return (new_node);
-	}
-	else if (!node->left)
-	{
-		new_node = binary_tree_node(node, data);
-		node->left = new_node;
-		if (heap->data_cmp(node->data, new_node->data) > 0) /* n1 - n2 */
-			swap_data(node, new_node);
-		heap->size++;
-		return (new_node);
-	}
-	else if (!node->right)
-	{
-		new_node = binary_tree_node(node, data);
-		node->right = new_node;
-		if (heap->data_cmp(node->data, new_node->data) > 0) /* n1 - n2 */
-			swap_data(node, new_node);
-		heap->size++;
-		return (new_node);
+		path[depth] = temp_i % 2;
+		depth++;
+		temp_i = (temp_i - 1) / 2;
 	}
 
-	new_node = heap_insert_recurse(heap, node->left, data);
-	if (!new_node)
-		new_node = heap_insert_recurse(heap, node->right, data);
+	parent = heap->root;
+	for (i = depth; i > 0; i--)
+	{
+		if (path[i - 1])
+			parent = parent->left;
+		else
+			parent = parent->right;
+	}
 
-	if (new_node && heap->data_cmp(node->data, new_node->data) > 0) /* n1 - n2 */
-		swap_data(node, new_node);
-
-	return (new_node);
+	return (parent);
 }
 
 /**
@@ -72,12 +60,41 @@ binary_tree_node_t *heap_insert_recurse(heap_t *heap,
  */
 binary_tree_node_t *heap_insert(heap_t *heap, void *data)
 {
-	binary_tree_node_t *new_node = NULL;
+	binary_tree_node_t *new_node = NULL, *parent = NULL;
 
 	if (!heap || !data)
 		return (NULL);  /* or create new heap, but don't know data_cmp */
 
-	new_node = heap_insert_recurse(heap, heap->root, data);
+	if (!heap->root)
+	{
+		new_node = binary_tree_node(NULL, data);
+		if (!new_node)
+			return (NULL);
+		heap->root = new_node;
+		heap->size = 1;
+		return (new_node);
+	}
+
+	parent = parent_finder(heap, heap->size);
+	if (!parent)
+		return (NULL);
+
+	new_node = binary_tree_node(parent, data);
+	if (!new_node)
+		return (NULL);
+
+	if (heap->size & 1)
+		parent->right = new_node;
+	else
+		parent->left = new_node;
+	heap->size++;
+
+	while (new_node->parent &&
+		heap->data_cmp(new_node->data, new_node->parent->data) < 0)
+	{
+		swap_data(new_node, new_node->parent);
+		new_node = new_node->parent;
+	}
 
 	return (new_node);
 }
