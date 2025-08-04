@@ -29,7 +29,7 @@ int freq_cmp(void *p1, void *p2)
 		return (-1);
 
 	/* compare characters for tiebreaker */
-	return ((int)s1->data - (int)s2->data);
+	return ((int)s2->data - (int)s1->data);
 }
 
 /**
