@@ -26,10 +26,10 @@ int freq_cmp(void *p1, void *p2)
 	if (s1->data == -1 && s2->data != -1)
 		return (1);
 	if (s1->data != -1 && s2->data != -1)
-		return (-1);
+		return (s1->data - s2->data);
 
 	/* compare characters for tiebreaker */
-	return ((int)s2->data - (int)s1->data);
+	return (0);
 }
 
 /**
