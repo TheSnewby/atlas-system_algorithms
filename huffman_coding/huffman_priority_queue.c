@@ -23,6 +23,11 @@ int freq_cmp(void *p1, void *p2)
 	if (n1 != n2)
 		return (n1 - n2);
 
+	if (s1->data == -1 && s2->data != -1)
+		return (1);
+	if (s1->data != -1 && s2->data != -1)
+		return (-1);
+
 	/* compare characters for tiebreaker */
 	return ((int)s1->data - (int)s2->data);
 }
