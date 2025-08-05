@@ -1,6 +1,29 @@
 #include "huffman.h"
 
 /**
+ * free_huffman_tree - frees the binary node that also contains symbol
+ * @data: data
+ */
+void free_huffman_tree(void *data)
+{
+	binary_tree_node_t *node = NULL;
+	symbol_t *sym = NULL;
+
+	if (!data)
+		return;
+
+	node = (binary_tree_node_t *)data;
+	sym = node->data;
+
+	free_huffman_tree(node->left);
+	free_huffman_tree(node->right);
+	free(sym);
+	node->data = NULL;
+	free(node);
+	node = NULL;
+}
+
+/**
  * huffman_codes_r - recursive printer for codes
  * @root: root of huffman tree
  * @path: path to leaf
@@ -53,7 +76,7 @@ int huffman_codes(char *data, size_t *freq, size_t size)
 	root = huffman_tree(data, freq, size);
 	huffman_codes_r(root, path, path_i);
 
-
+	free_huffman_tree(root);
 
 	return (1);
 }
