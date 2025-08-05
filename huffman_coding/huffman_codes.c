@@ -15,9 +15,9 @@ static void huffman_codes_r(binary_tree_node_t *root, int *path, int index)
 		return;
 
 	root_data = (symbol_t *)root->data;
-	printf("Visiting: %c\n", root_data->data);
+	/* printf("Visiting: %c\n", root_data->data); */
 
-	if (!root->left && !root->right) /* leaf */
+	if (!root->left && !root->right && root_data->data != -1) /* leaf */
 	{
 		printf("%c: ", root_data->data);
 		for (i = 0; i < index; i++)
@@ -44,24 +44,16 @@ static void huffman_codes_r(binary_tree_node_t *root, int *path, int index)
  */
 int huffman_codes(char *data, size_t *freq, size_t size)
 {
-	heap_t *prio_queue = NULL;
 	binary_tree_node_t *root = NULL;
 	int path[10] = {0}, path_i = 0;
 
 	if (!data || !freq || size == 0)
 		return (0);
 
-	prio_queue = huffman_priority_queue(data, freq, size);
-	if (!prio_queue)
-		return (0);
-
-	while (prio_queue->size > 1)
-		huffman_extract_and_insert(prio_queue);
-
-	root = prio_queue->root;
+	root = huffman_tree(data, freq, size);
 	huffman_codes_r(root, path, path_i);
 
-	heap_delete(prio_queue, NULL);
+
 
 	return (1);
 }
