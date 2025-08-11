@@ -1,5 +1,8 @@
 #include "pathfinding.h"
 
+int check_visited(int x, int y, queue_t *visited);
+point_t *create_point(int x, int y);
+
 /**
  * populate_unvisited - populates unvisited queue with new options
  * @map: 2D array
@@ -32,7 +35,7 @@ static void populate_unvisited(char **map, queue_t *unvisited, queue_t *visited,
  *
  * Return: returns 0 if they match, 1 if they don't, -1 on type failure
  */
-int point_cmp(point_t *a, point_t *b)
+int point_cmp(const point_t *a, const point_t *b)
 {
 	if (!a || !b)
 		return (-1);
@@ -54,7 +57,6 @@ int point_cmp(point_t *a, point_t *b)
  */
 int check_visited(int x, int y, queue_t *visited)
 {
-	int i;
 	queue_node_t *temp = NULL;
 	point_t *point = NULL;
 
@@ -127,8 +129,8 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 	if (!path || !unvisited || !visited)
 		return (NULL);
 
-	queue_push_front(visited, start);
-	queue_push_front(path, start);
+	queue_push_front(visited, &start);
+	queue_push_front(path, &start);
 
 	x = start->x;
 	y = start->y;
@@ -144,8 +146,8 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 				return (NULL); /* no valid paths forward */
 		}
 
-		queue_push_front(visited, current_point);
-		queue_push_back(path, current_point);
+		queue_push_front(visited, &current_point);
+		queue_push_back(path, &current_point);
 
 		if (point_cmp(current_point, target) == 0)
 		{
