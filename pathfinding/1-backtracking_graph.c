@@ -11,11 +11,11 @@ static void free_path(queue_t *path)
 	char *city = NULL;
 
 	while (path->front)
-    {
-        city = (char *)dequeue(path);
-        free(city);
-    }
-    free(path);
+	{
+		city = (char *)dequeue(path);
+		free(city);
+	}
+	free(path);
 }
 
 /**
