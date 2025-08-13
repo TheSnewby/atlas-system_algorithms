@@ -11,24 +11,24 @@ point_t *create_point(int x, int y);
  */
 void *dequeue_back(queue_t *queue)
 {
-    queue_node_t *tmp;
-    void *ptr;
+	queue_node_t *tmp;
+	void *ptr;
 
-    if (!queue || !queue->back)
-        return (NULL);
+	if (!queue || !queue->back)
+		return (NULL);
 
-    ptr = queue->back->ptr;
-    tmp = queue->back;
+	ptr = queue->back->ptr;
+	tmp = queue->back;
 
-    if (queue->back->prev)
-        queue->back->prev->next = NULL;
-    else
-        queue->front = NULL;
+	if (queue->back->prev)
+		queue->back->prev->next = NULL;
+	else
+		queue->front = NULL;
 
-    queue->back = queue->back->prev;
-    free(tmp);
+	queue->back = queue->back->prev;
+	free(tmp);
 	tmp = NULL;
-    return (ptr);
+	return (ptr);
 }
 
 /**
@@ -49,27 +49,31 @@ point_t *populate_unvisited(char **map,	queue_t *visited,
 
 	if (!visited)
 		return (NULL);
-	printf("Checking coordinates [%d, %d]\n", x, y);
+
 	/* populate new path options */ /* map[y][x] */
-	if (x + 1 < cols && map[y][x + 1] == '0' && !check_visited(x + 1, y, visited))
+	if (x + 1 < cols && map[y][x + 1] == '0' &&
+		!check_visited(x + 1, y, visited))
 	{
 		new_point = create_point(x + 1, y);
 		if (!new_point)
 			printf("failed new_point RIGHT\n");
 	}
-	else if (y + 1 < rows && map[y + 1][x] == '0' && !check_visited(x, y + 1, visited))
+	else if (y + 1 < rows && map[y + 1][x] == '0' &&
+		!check_visited(x, y + 1, visited))
 	{
 		new_point = create_point(x, y + 1);
 		if (!new_point)
 			printf("failed new_point DOWN\n");
 	}
-	else if (x - 1 >= 0 && map[y][x - 1] == '0' && !check_visited(x - 1, y, visited))
+	else if (x - 1 >= 0 && map[y][x - 1] == '0' &&
+		!check_visited(x - 1, y, visited))
 	{
 		new_point =  create_point(x - 1, y);
 		if (!new_point)
 			printf("failed new_point LEFT\n");
 	}
-	else if (y - 1 >= 0 && map[y - 1][x] == '0' && !check_visited(x, y - 1, visited))
+	else if (y - 1 >= 0 && map[y - 1][x] == '0' &&
+		!check_visited(x, y - 1, visited))
 	{
 		new_point = create_point(x, y - 1);
 		if (!new_point)
@@ -152,26 +156,22 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 	point_t const *start, point_t const *target)
 {
 	queue_t *visited = NULL, *path = NULL;
-	point_t *next_point = NULL, *prev_point = NULL, *start_cpy = NULL,
-	*visited_curr_pt_cpy = NULL;
+	point_t *next_point = NULL, *prev_point = NULL, *start_cpy = NULL;
 	int x, y;
 
 	if (!map || !start || !target ||
 		start->x >= cols || start->y >= rows || POINT_CMP(start, target))
 		return (NULL);
-
 	path = queue_create();
 	visited = queue_create();
 	start_cpy = create_point(start->x, start->y);
-	visited_curr_pt_cpy = create_point(start->x, start->y);
-	if (!path || !visited || !start_cpy || !visited_curr_pt_cpy)
+	if (!path || !visited || !start_cpy)
 		return (NULL);
-
-	queue_push_front(visited, (void *)visited_curr_pt_cpy);
+	queue_push_front(visited, create_point(start->x, start->y));
 	queue_push_front(path, (void *)start_cpy);
-
 	x = start_cpy->x;
 	y = start_cpy->y;
+	printf("Checking coordinates [%d, %d]\n", x, y);
 	while (path->front)
 	{
 		next_point = populate_unvisited(map, visited, x, y, rows, cols);
@@ -179,30 +179,18 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 		{
 			free(dequeue_back(path));
 			if (!path->front)
-			{
-				queue_delete(visited);
-				queue_delete(path);
-				return (NULL); /* no valid paths forward */
-			}
+				return (NULL);
 			prev_point = (point_t *)path->back->ptr;
-			x = prev_point->x;
-			y = prev_point->y;
-			next_point = populate_unvisited(map, visited, x, y, rows, cols);
+			next_point = populate_unvisited(map, visited, prev_point->x,
+				prev_point->y, rows, cols);
 		}
-
 		x = next_point->x;
 		y = next_point->y;
-
-		visited_curr_pt_cpy = create_point(x, y);
-
-		queue_push_back(visited, (void *)visited_curr_pt_cpy);
-		queue_push_back(path, (void *)next_point);
-
+		queue_push_back(visited, create_point(x, y));
+		queue_push_back(path, next_point);
+		printf("Checking coordinates [%d, %d]\n", x, y);
 		if (POINT_CMP(next_point, target) == 1)
-		{
-			queue_delete(visited);
 			return (path);
-		}
 	}
 	return (NULL);
 }
