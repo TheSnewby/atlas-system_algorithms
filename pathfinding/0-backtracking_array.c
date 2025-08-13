@@ -50,36 +50,27 @@ point_t *populate_unvisited(char **map,	queue_t *visited,
 	if (!visited)
 		return (NULL);
 	printf("Checking coordinates [%d, %d]\n", x, y);
-	printf("DEBUG: R: %c, D: %c, L: %c, U: %c\n",
-		(x + 1 < cols) ? map[y][x+1] : ' ', 
-		(y + 1 < rows) ? map[y+1][x] : ' ', 
-		(x - 1 >= 0) ? map[y][x-1] : ' ', 
-		(y - 1 >= 0) ? map[y-1][x] : ' ');
 	/* populate new path options */ /* map[y][x] */
 	if (x + 1 < cols && map[y][x + 1] == '0' && !check_visited(x + 1, y, visited))
 	{
-		printf("Adding RIGHT\n");
 		new_point = create_point(x + 1, y);
 		if (!new_point)
 			printf("failed new_point RIGHT\n");
 	}
 	else if (y + 1 < rows && map[y + 1][x] == '0' && !check_visited(x, y + 1, visited))
 	{
-		printf("Adding DOWN\n");
 		new_point = create_point(x, y + 1);
 		if (!new_point)
 			printf("failed new_point DOWN\n");
 	}
 	else if (x - 1 >= 0 && map[y][x - 1] == '0' && !check_visited(x - 1, y, visited))
 	{
-		printf("Adding LEFT\n");
 		new_point =  create_point(x - 1, y);
 		if (!new_point)
 			printf("failed new_point LEFT\n");
 	}
 	else if (y - 1 >= 0 && map[y - 1][x] == '0' && !check_visited(x, y - 1, visited))
 	{
-		printf("Adding UP\n");
 		new_point = create_point(x, y - 1);
 		if (!new_point)
 			printf("failed new_point UP\n");
@@ -183,11 +174,9 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 	y = start_cpy->y;
 	while (path->front)
 	{
-		printf("While Loop - DEBUG\n");
 		next_point = populate_unvisited(map, visited, x, y, rows, cols);
 		while (!next_point)
 		{
-			printf("!unvisited - DEBUG\n");
 			free(dequeue_back(path));
 			if (!path->front)
 			{
@@ -215,6 +204,5 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 			return (path);
 		}
 	}
-	printf("final return NULL - DEBUG\n");
 	return (NULL);
 }
