@@ -142,6 +142,28 @@ point_t *create_point(int x, int y)
 }
 
 /**
+ * queue_delete_with_points - deletes a queue with point_t ptrs
+ * @queue: the queue to be deleted
+ */
+void queue_delete_with_points(queue_t *queue)
+{
+	queue_node_t *temp = NULL, *delete_me = NULL;
+
+	if (!queue)
+		return;
+
+	temp = queue->front;
+	while (temp)
+	{
+		delete_me = temp;
+		temp = temp->next;
+		free((point_t *)delete_me->ptr);
+		free(delete_me);
+	}
+	free(queue);
+}
+
+/**
  * backtracking_array -  searches for the first path from a starting point to a
  *  target point within a two-dimensional array.
  * @map: 2D array with 0s and 1s representing walkable and blocked cells
@@ -156,22 +178,24 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 	point_t const *start, point_t const *target)
 {
 	queue_t *visited = NULL, *path = NULL;
-	point_t *next_point = NULL, *prev_point = NULL, *start_cpy = NULL;
+	point_t *next_point = NULL, *prev_point = NULL;
 	int x, y;
 
 	if (!map || !start || !target ||
 		start->x >= cols || start->y >= rows || POINT_CMP(start, target))
 		return (NULL);
+
 	path = queue_create();
 	visited = queue_create();
-	start_cpy = create_point(start->x, start->y);
-	if (!path || !visited || !start_cpy)
+	if (!path || !visited)
 		return (NULL);
+
 	queue_push_front(visited, create_point(start->x, start->y));
-	queue_push_front(path, (void *)start_cpy);
-	x = start_cpy->x;
-	y = start_cpy->y;
+	queue_push_front(path, create_point(start->x, start->y));
+	x = start->x;
+	y = start->y;
 	printf("Checking coordinates [%d, %d]\n", x, y);
+
 	while (path->front)
 	{
 		next_point = populate_unvisited(map, visited, x, y, rows, cols);
@@ -180,24 +204,29 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 			free(dequeue_back(path));
 			if (!path->front)
 			{
-				queue_delete(visited);
-				queue_delete(path);
+				queue_delete_with_points(visited);
+				queue_delete_with_points(path);
 				return (NULL); /* no valid paths forward */
 			}
+
 			prev_point = (point_t *)path->back->ptr;
 			next_point = populate_unvisited(map, visited, prev_point->x,
 				prev_point->y, rows, cols);
 		}
+
 		x = next_point->x;
 		y = next_point->y;
 		queue_push_back(visited, create_point(x, y));
 		queue_push_back(path, next_point);
+
 		printf("Checking coordinates [%d, %d]\n", x, y);
 		if (POINT_CMP(next_point, target) == 1)
 		{
-			queue_delete(visited);
+			queue_delete_with_points(visited);
 			return (path);
 		}
 	}
+	queue_delete_with_points(visited);
+	queue_delete_with_points(path);
 	return (NULL);
 }
