@@ -46,7 +46,7 @@ int backtracking_graph_r(const vertex_t *current, size_t *visited,
 		printf("Checking %s\n", current->content);
 
 	visited[current->index] = 1;
-	queue_push_back(path, current->content);
+	queue_push_back(path, strdup(current->content));
 
 	if (VERTEX_CMP(current, target))
 		return (1);
