@@ -41,6 +41,7 @@ int backtracking_graph_r(const vertex_t *current, size_t *visited,
 	queue_t *path, vertex_t const *target)
 {
 	edge_t *next_e = NULL;
+
 	if (!visited[current->index])
 		printf("Checking %s\n", current->content);
 
@@ -58,8 +59,8 @@ int backtracking_graph_r(const vertex_t *current, size_t *visited,
 				return (1);
 		next_e = next_e->next;
 	}
-
-	free(dequeue_back(path));
+	if (path->back)
+		free(dequeue_back(path));
 	return (0);
 }
 
