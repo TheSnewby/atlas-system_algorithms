@@ -179,7 +179,11 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 		{
 			free(dequeue_back(path));
 			if (!path->front)
-				return (NULL);
+			{
+				queue_delete(visited);
+				queue_delete(path);
+				return (NULL); /* no valid paths forward */
+			}
 			prev_point = (point_t *)path->back->ptr;
 			next_point = populate_unvisited(map, visited, prev_point->x,
 				prev_point->y, rows, cols);
@@ -190,7 +194,10 @@ queue_t *backtracking_array(char **map, int rows, int cols,
 		queue_push_back(path, next_point);
 		printf("Checking coordinates [%d, %d]\n", x, y);
 		if (POINT_CMP(next_point, target) == 1)
+		{
+			queue_delete(visited);
 			return (path);
+		}
 	}
 	return (NULL);
 }
