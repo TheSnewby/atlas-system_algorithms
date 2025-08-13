@@ -1,6 +1,24 @@
 #include "pathfinding.h"
 
 /**
+ * free_path - Unstacks the queue to discover the path from the starting
+ * vertex to the target vertex. Also deallocates the queue.
+ *
+ * @path: Queue containing the path
+ */
+static void free_path(queue_t *path)
+{
+	char *city = NULL;
+
+	while (path->front)
+    {
+        city = (char *)dequeue(path);
+        free(city);
+    }
+    free(path);
+}
+
+/**
  * dequeue_back - Pops out the back node of a queue
  * @queue: Pointer to the queue
  *
@@ -94,5 +112,6 @@ queue_t *backtracking_graph(graph_t *graph,
 	}
 
 	free(visited);
+	free_path(path);
 	return (NULL);
 }
