@@ -6,6 +6,8 @@
 #include "graphs.h"
 #include "queues.h"
 
+#define POINT_CMP(a, b) (!(a) || !(b) ? -1 : ((a)->x == (b)->x && (a)->y == (b)->y) ? 1 : 0)
+
 /**
  * struct point_s - Structure storing coordinates
  *

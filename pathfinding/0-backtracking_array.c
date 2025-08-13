@@ -4,46 +4,88 @@ int check_visited(int x, int y, queue_t *visited);
 point_t *create_point(int x, int y);
 
 /**
- * populate_unvisited - populates unvisited queue with new options
- * @map: 2D array
- * @unvisited: queue of unvisited
- * @visited: queue of visited
- * @x: x coord
- * @y: y coord
+ * dequeue_back - Pops out the back node of a queue
+ * @queue: Pointer to the queue
+ *
+ * Return: A pointer to the data of the popped node, NULL on failure
  */
-static void populate_unvisited(char **map, queue_t *unvisited, queue_t *visited,
-	int x, int y, int rows, int cols)
+void *dequeue_back(queue_t *queue)
 {
-	if (!unvisited || !visited)
-		return;
+    queue_node_t *tmp;
+    void *ptr;
 
-	/* populate new path options */
-	if (y - 1 >= 0 && !map[x][y - 1] && check_visited(x, y - 1, visited))
-		queue_push_front(unvisited, create_point(x, y - 1));
-	if (x + 1 >= 0 && !map[x - 1][y] && check_visited(x - 1, y, visited))
-		queue_push_front(unvisited, create_point(x - 1, y));
-	if (y + 1 < cols && !map[x][y + 1] && check_visited(x, y + 1, visited))
-		queue_push_front(unvisited, create_point(x, y + 1));
-	if (x + 1 < rows && !map[x + 1][y] && check_visited(x + 1, y, visited))
-		queue_push_front(unvisited, create_point(x + 1, y));
+    if (!queue || !queue->back)
+        return (NULL);
+
+    ptr = queue->back->ptr;
+    tmp = queue->back;
+
+    if (queue->back->prev)
+        queue->back->prev->next = NULL;
+    else
+        queue->front = NULL;
+
+    queue->back = queue->back->prev;
+    free(tmp);
+	tmp = NULL;
+    return (ptr);
 }
 
 /**
- * point_cmp - compares points
- * @a: point a
- * @b: point b
+ * populate_unvisited - populates unvisited queue with new options
+ * @map: 2D array
+ * @visited: queue of visited
+ * @x: x coord
+ * @y: y coord
+ * @rows: number of rows in map
+ * @cols: number of cols in map
  *
- * Return: returns 0 if they match, 1 if they don't, -1 on type failure
+ * Return: unvisited point_t
  */
-int point_cmp(const point_t *a, const point_t *b)
+point_t *populate_unvisited(char **map,	queue_t *visited,
+	int x, int y, int rows, int cols)
 {
-	if (!a || !b)
-		return (-1);
+	point_t *new_point = NULL;
 
-	if (a->x == b->x && a->y == b->y)
-		return (0);
-	else
-		return (1);
+	if (!visited)
+		return (NULL);
+	printf("Checking coordinates [%d, %d]\n", x, y);
+	printf("DEBUG: R: %c, D: %c, L: %c, U: %c\n",
+		(x + 1 < cols) ? map[y][x+1] : ' ', 
+		(y + 1 < rows) ? map[y+1][x] : ' ', 
+		(x - 1 >= 0) ? map[y][x-1] : ' ', 
+		(y - 1 >= 0) ? map[y-1][x] : ' ');
+	/* populate new path options */ /* map[y][x] */
+	if (x + 1 < cols && map[y][x + 1] == '0' && !check_visited(x + 1, y, visited))
+	{
+		printf("Adding RIGHT\n");
+		new_point = create_point(x + 1, y);
+		if (!new_point)
+			printf("failed new_point RIGHT\n");
+	}
+	else if (y + 1 < rows && map[y + 1][x] == '0' && !check_visited(x, y + 1, visited))
+	{
+		printf("Adding DOWN\n");
+		new_point = create_point(x, y + 1);
+		if (!new_point)
+			printf("failed new_point DOWN\n");
+	}
+	else if (x - 1 >= 0 && map[y][x - 1] == '0' && !check_visited(x - 1, y, visited))
+	{
+		printf("Adding LEFT\n");
+		new_point =  create_point(x - 1, y);
+		if (!new_point)
+			printf("failed new_point LEFT\n");
+	}
+	else if (y - 1 >= 0 && map[y - 1][x] == '0' && !check_visited(x, y - 1, visited))
+	{
+		printf("Adding UP\n");
+		new_point = create_point(x, y - 1);
+		if (!new_point)
+			printf("failed new_point UP\n");
+	}
+
+	return (new_point);
 }
 
 /**
@@ -58,7 +100,7 @@ int point_cmp(const point_t *a, const point_t *b)
 int check_visited(int x, int y, queue_t *visited)
 {
 	queue_node_t *temp = NULL;
-	point_t *point = NULL;
+	point_t *point = NULL, *visited_pt = NULL;
 
 	point = create_point(x, y);
 	if (!point || !visited || !visited->front)
@@ -67,11 +109,15 @@ int check_visited(int x, int y, queue_t *visited)
 	temp = visited->back;
 	while (temp)
 	{
-		if (point_cmp((point_t *)temp->ptr, point) == 0)
+		visited_pt = (point_t *)temp->ptr;
+		if (POINT_CMP(visited_pt, point))
+		{
+			free(point);
 			return (1);
+		}
 		temp = temp->prev;
 	}
-	free (point);
+	free(point);
 
 	return (0);
 }
@@ -114,49 +160,61 @@ point_t *create_point(int x, int y)
 queue_t *backtracking_array(char **map, int rows, int cols,
 	point_t const *start, point_t const *target)
 {
-	queue_t *unvisited = NULL, *visited = NULL, *path = NULL;
-	point_t *current_point = NULL;
+	queue_t *visited = NULL, *path = NULL;
+	point_t *next_point = NULL, *prev_point = NULL, *start_cpy = NULL,
+	*visited_curr_pt_cpy = NULL;
 	int x, y;
 
 	if (!map || !start || !target ||
-		start->x >= rows || start->y >= cols || start == target)
+		start->x >= cols || start->y >= rows || POINT_CMP(start, target))
 		return (NULL);
 
 	path = queue_create();
-	unvisited = queue_create();
 	visited = queue_create();
-
-	if (!path || !unvisited || !visited)
+	start_cpy = create_point(start->x, start->y);
+	visited_curr_pt_cpy = create_point(start->x, start->y);
+	if (!path || !visited || !start_cpy || !visited_curr_pt_cpy)
 		return (NULL);
 
-	queue_push_front(visited, &start);
-	queue_push_front(path, &start);
+	queue_push_front(visited, (void *)visited_curr_pt_cpy);
+	queue_push_front(path, (void *)start_cpy);
 
-	x = start->x;
-	y = start->y;
-	do
+	x = start_cpy->x;
+	y = start_cpy->y;
+	while (path->front)
 	{
-		populate_unvisited(map, unvisited, visited, x, y, rows, cols);
-		current_point = dequeue(unvisited);
-		while (!current_point)
+		printf("While Loop - DEBUG\n");
+		next_point = populate_unvisited(map, visited, x, y, rows, cols);
+		while (!next_point)
 		{
-			current_point = dequeue(visited);
-			dequeue(path);
-			if (!visited->front)
+			printf("!unvisited - DEBUG\n");
+			free(dequeue_back(path));
+			if (!path->front)
+			{
+				queue_delete(visited);
+				queue_delete(path);
 				return (NULL); /* no valid paths forward */
+			}
+			prev_point = (point_t *)path->back->ptr;
+			x = prev_point->x;
+			y = prev_point->y;
+			next_point = populate_unvisited(map, visited, x, y, rows, cols);
 		}
 
-		queue_push_front(visited, &current_point);
-		queue_push_back(path, &current_point);
+		x = next_point->x;
+		y = next_point->y;
 
-		if (point_cmp(current_point, target) == 0)
+		visited_curr_pt_cpy = create_point(x, y);
+
+		queue_push_back(visited, (void *)visited_curr_pt_cpy);
+		queue_push_back(path, (void *)next_point);
+
+		if (POINT_CMP(next_point, target) == 1)
 		{
-			queue_delete(unvisited);
 			queue_delete(visited);
 			return (path);
 		}
-
-	} while (unvisited->front);
-
+	}
+	printf("final return NULL - DEBUG\n");
 	return (NULL);
 }
