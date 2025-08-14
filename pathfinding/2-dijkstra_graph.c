@@ -106,7 +106,7 @@ queue_t *dijkstra_graph(graph_t *graph,
 
 	distance[start->index] = 0;
 
-	for (i = 0; i < graph->nb_vertices - 1; i++)
+	for (i = 0; i < graph->nb_vertices; i++)
 	{
 		min_i = min_distance(distance, visited, graph->nb_vertices);
 		if (min_i == SIZE_MAX)
