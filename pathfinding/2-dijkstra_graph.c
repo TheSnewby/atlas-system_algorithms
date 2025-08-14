@@ -106,11 +106,15 @@ queue_t *dijkstra_graph(graph_t *graph,
 
 	distance[start->index] = 0;
 
-	for (i = 0; i < graph->nb_vertices; i++)
+	while (1)
 	{
 		min_i = min_distance(distance, visited, graph->nb_vertices);
 		if (min_i == SIZE_MAX)
-			break;
+			break; // no more reachable vertices
+
+		if (distance[min_i] == SIZE_MAX)
+			break; // vertex is unreachable, stop processing
+
 		visited[min_i] = 1;
 
 		min_v = graph->vertices;
@@ -119,15 +123,15 @@ queue_t *dijkstra_graph(graph_t *graph,
 
 		if (min_v)
 			printf("Checking %s, distance from %s is %zu\n",
-			min_v->content, start->content, distance[min_i]);
+				min_v->content, start->content, distance[min_i]);
 
 		if (min_i == target->index)
 			break;
 
 		for (temp_e = min_v->edges; temp_e; temp_e = temp_e->next)
 		{
-			if (!visited[temp_e->dest->index] && distance[min_i] != SIZE_MAX &&
-			distance[min_i] + temp_e->weight < distance[temp_e->dest->index])
+			if (!visited[temp_e->dest->index] &&
+				distance[min_i] + temp_e->weight < distance[temp_e->dest->index])
 			{
 				distance[temp_e->dest->index] = distance[min_i] + temp_e->weight;
 				prev[temp_e->dest->index] = min_i;
