@@ -26,7 +26,7 @@ typedef struct nary_tree_s
 nary_tree_t *nary_tree_insert(nary_tree_t *, char const *);
 void nary_tree_delete(nary_tree_t *);
 size_t nary_tree_traverse(nary_tree_t const *,
-	void (*)(nary_tree_t const *, size_t ));
+	void (*)(nary_tree_t const *, size_t));
 size_t nary_tree_diameter(nary_tree_t const *);
 int path_exists(nary_tree_t const *, char const * const *);
 
