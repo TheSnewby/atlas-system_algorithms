@@ -1,3 +1,6 @@
+<img width="992" height="592" alt="image" src="https://github.com/user-attachments/assets/7f10fd8c-6e40-424d-9ded-a0b05e965c80" />
+
+
 # Atlas System Algorithms
 
 A set of complex data structures and algorithms designed for efficient performance of software. I found the data structures refreshing and the algorithms to use them quite complex.
