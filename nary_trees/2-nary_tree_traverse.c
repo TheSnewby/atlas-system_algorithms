@@ -28,7 +28,7 @@ size_t ntt_helper(nary_tree_t const *node,
 }
 
 /**
- * nary_tree_travers - goes through a N-ary tree, node by node
+ * nary_tree_traverse - goes through a N-ary tree, node by node
  * @root: root node of the tree
  * @action: function pointer to execute for each node traversed
  *  - node: node being traversed
