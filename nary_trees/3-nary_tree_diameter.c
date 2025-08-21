@@ -33,18 +33,17 @@ metrics_t ntd_helper(nary_tree_t const *node)
 
 		child = child->next;
 	}
+
 	current_metrics.height = first_height ? first_height : 1;
 	current_metrics.diameter = max_child_d;
+
 	if (first_height && second_height)
 	{
 		if (first_height + second_height - 1 > current_metrics.diameter)
 			current_metrics.diameter = first_height + second_height - 1;
 	}
-	else if (first_height)
-	{
-		if (first_height + 1 > current_metrics.diameter)
-			current_metrics.diameter = first_height + 1;
-	}
+	else if (first_height && first_height > current_metrics.diameter)
+		current_metrics.diameter = first_height;
 
 	return (current_metrics);
 }
