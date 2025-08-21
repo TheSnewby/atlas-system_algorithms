@@ -1,75 +1,64 @@
 #include "nary_trees.h"
-
 /**
- * biggest_depth_helper - recursive helper for biggest_depth
- * @node: current node of the tree
+ * ntd_helper - recursive helper for nary_tree_diameter
+ * @node: Current node in tree
  *
- * Return: biggest depth of the tree pointed to by the root
+ * Return: metrics of the subtree
  */
-size_t biggest_depth_helper(nary_tree_t const *node)
+metrics_t ntd_helper(nary_tree_t const *node)
 {
-	size_t dep_children, dep_next, bd;
+	metrics_t current_metrics = {1, 1}, child_metrics;
+	size_t first_height = 0, second_height = 0;
+	size_t max_child_d = 1; /* tracks whether longest diam is from single path */
+	nary_tree_t const *child;
 
 	if (!node)
-		return (0);
+		return ((metrics_t){0, 0});
 
-	dep_children = biggest_depth_helper(node->children);
-	dep_next = biggest_depth_helper(node->next);
-	if (node->children)
-		dep_children++;
-	bd = (dep_children > dep_next) ? dep_children : dep_next;
+	child = node->children; /* traverse children of node */
+	while (child)
+	{
+		child_metrics = ntd_helper(child);
 
-	return (bd);
+		if (child_metrics.diameter > max_child_d)
+			max_child_d = child_metrics.diameter;
+
+		if (child_metrics.height + 1 > first_height) /* +1 for current node*/
+		{
+			second_height = first_height;
+			first_height = child_metrics.height + 1;
+		}
+		else if (child_metrics.height + 1 > second_height)
+			second_height = child_metrics.height + 1;
+
+		child = child->next;
+	}
+
+	current_metrics.height = first_height ? first_height : 1;
+	current_metrics.diameter = max_child_d;
+
+	if (first_height && second_height)
+		if (first_height + second_height - 1 > current_metrics.diameter)
+			current_metrics.diameter = first_height + second_height - 1;
+	else if (first_height)
+		if (first_height + 1 > current_metrics.diameter)
+			current_metrics.diameter = first_height + 1;
+
+	return (current_metrics);
 }
 
-/**
- * biggest_depth - find largest depth (current height) of a node
- * @node: current node of the tree
- *
- * Return: biggest depth of the tree pointed to by the root
- */
-size_t biggest_depth(nary_tree_t const *node)
-{
-	size_t bd;
-
-	if (!node)
-		return (0);
-
-	bd = biggest_depth_helper(node->children);
-	return (bd + 1);
-}
 
 /**
- * nary_tree_diameter - computes the diameter of an N-ary tree
+ * nary_tree_diameter - computes the diameter of an N-ary tree, the diamater is
+ * calculated as the number of nodes, not edges, of the longest path
  * @root: root node
  *
  * Return: diamater of the tree
  */
 size_t nary_tree_diameter(nary_tree_t const *root)
 {
-	size_t first = 0, second = 0, retValue = 0;
-	nary_tree_t *temp = root->children;
-
 	if (!root)
 		return (0);
 
-	while (temp)
-	{
-		retValue = biggest_depth(temp);
-		if (retValue > first)
-		{
-			second = first;
-			first = retValue;
-		}
-		else if (retValue > second)
-			second = retValue;
-		temp = temp->next;
-	}
-
-	if (first && second)
-		return (first + second + 2);
-	else if (first)
-		return (first + 1);
-	else
-		return (0);
+	return (ntd_helper(root).diameter);
 }

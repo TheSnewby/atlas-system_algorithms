@@ -6,6 +6,18 @@
 #include <string.h>
 
 /**
+ * struct metrics_s - holds both height and diameter
+ * @height: height of the node
+ * @diameter: diameter of the subtree
+ */
+typedef struct metrics_s
+{
+	size_t height;
+	size_t diameter;
+} metrics_t;
+
+
+/**
  * struct nary_tree_s - N-ary tree node structure
  *
  * @content: Content of the node
